@@ -14,6 +14,7 @@
 
 @property (nonatomic,strong) NSArray *types;
 
+@property (nonatomic,copy) NSString *hostName;
 
 @end
 
@@ -21,7 +22,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.automaticallyAdjustsScrollViewInsets = YES;
+    self.extendedLayoutIncludesOpaqueBars = YES;
+    self.edgesForExtendedLayout = UIRectEdgeAll;
     //背景色
     self.webView.backgroundColor = [UIColor clearColor];
     self.view.backgroundColor = [UIColor colorWithRed:46./255. green:49./255. blue:50./255. alpha:1];
@@ -31,9 +34,9 @@
 }
 
 -(UILabel *)providerLabel{
-
-    if(_providerLabel == nil){
     
+    if(_providerLabel == nil){
+        
         //添加label
         _providerLabel = [[UILabel alloc] init];
         _providerLabel.font = [UIFont systemFontOfSize:12];
@@ -50,7 +53,7 @@
     [super viewDidAppear:animated];
     
     if(CGRectEqualToRect(self.providerLabel.frame, CGRectZero)){
-    
+        
         CGFloat wh = self.view.bounds.size.width;
         CGFloat y = self.navigationController == nil ? 10 : 64;
         self.providerLabel.frame = CGRectMake(0, y, wh, 40);
@@ -60,19 +63,21 @@
 
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
-
+    
     BOOL res = [super webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
     
-    self.providerLabel.text = [NSString stringWithFormat:@"时点软件提示您：网页由 %@ 提供",[self cutHost:request.URL.absoluteString]];
+    [self cutHost:request.URL.absoluteString];
+    
+    self.providerLabel.text = [NSString stringWithFormat:@"时点软件提示您：网页由 %@ 提供",self.hostName];
     
     return res;
 }
 
 
 -(NSArray *)types{
-
-    if(_types == nil){
     
+    if(_types == nil){
+        
         _types = @[@"com.cn",@"net.cn",@"org.cn",@"com",@"cn",@"org",@"im",@"wang",@"cc",@"fm",@"net",@"biz",@"info",@"edu",@"edu",@"gov",@"hk",@"jp",@"uk",@"fr",@"au",@"de"];
     }
     
@@ -80,7 +85,9 @@
 }
 
 -(NSString *)cutHost:(NSString *)urlString{
-
+    
+    if ([urlString isEqualToString:@"about:blank"]){return nil;}
+    
     __block NSRange range = NSMakeRange(0, 0);
     
     [self.types enumerateObjectsUsingBlock:^(NSString *typeString, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -97,6 +104,9 @@
     NSString *msgString = range.length == 0 ? @"未知服务器" : [urlString substringWithRange:NSMakeRange(0, range.location+range.length)];
     
     if ([msgString hasPrefix:@"http://"]) msgString = [msgString substringFromIndex:7];
+    if ([msgString hasPrefix:@"https://"]) msgString = [msgString substringFromIndex:8];
+    
+    self.hostName = msgString;
     
     return msgString;
 }
