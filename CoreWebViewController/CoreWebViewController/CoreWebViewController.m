@@ -31,6 +31,10 @@
     
     //添加ProviderLabel
     [self.view.layer insertSublayer:self.providerLabel.layer atIndex:0];
+    
+    if([UIDevice currentDevice].systemVersion.floatValue < 8.0){
+        self.navigationButtonsHidden = YES;
+    }
 }
 
 -(UILabel *)providerLabel{
@@ -112,6 +116,6 @@
 }
 
 
-
+-(void)dealloc{self.navigationButtonsHidden = YES;}
 
 @end
