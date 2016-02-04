@@ -864,7 +864,7 @@
         self.title = url;
     }
     else if (self.showPageTitles) {
-        self.title = NSLocalizedStringFromTable(@"Loading...", @"TOWebViewControllerLocalizable", @"Loading...");
+        self.title = NSLocalizedStringFromTable(@"正在加载...", @"TOWebViewControllerLocalizable", @"Loading...");
     }
 }
 

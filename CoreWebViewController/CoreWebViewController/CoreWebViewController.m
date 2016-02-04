@@ -35,6 +35,7 @@
     if([UIDevice currentDevice].systemVersion.floatValue < 8.0){
         self.navigationButtonsHidden = YES;
     }
+    self.showUrlWhileLoading = NO;
 }
 
 -(UILabel *)providerLabel{
