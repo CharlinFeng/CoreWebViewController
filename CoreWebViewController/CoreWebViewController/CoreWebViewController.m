@@ -32,9 +32,6 @@
     //添加ProviderLabel
     [self.view.layer insertSublayer:self.providerLabel.layer atIndex:0];
     
-    if([UIDevice currentDevice].systemVersion.floatValue < 8.0){
-        self.navigationButtonsHidden = YES;
-    }
     self.showUrlWhileLoading = NO;
 }
 
@@ -73,7 +70,12 @@
     
     [self cutHost:request.URL.absoluteString];
     
-    self.providerLabel.text = [NSString stringWithFormat:@"时点软件提示您：网页由 %@ 提供",self.hostName];
+    if (self.hostName != nil) {
+        self.providerLabel.text = [NSString stringWithFormat:@"时点软件提示您：网页由 %@ 提供",self.hostName];
+    }else {
+        self.providerLabel.text = @"";
+    }
+    
     
     return res;
 }
@@ -106,7 +108,7 @@
         }
     }];
     
-    NSString *msgString = range.length == 0 ? @"未知服务器" : [urlString substringWithRange:NSMakeRange(0, range.location+range.length)];
+    NSString *msgString = range.length == 0 ? nil : [urlString substringWithRange:NSMakeRange(0, range.location+range.length)];
     
     if ([msgString hasPrefix:@"http://"]) msgString = [msgString substringFromIndex:7];
     if ([msgString hasPrefix:@"https://"]) msgString = [msgString substringFromIndex:8];
@@ -114,6 +116,20 @@
     self.hostName = msgString;
     
     return msgString;
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:animated];
+    
+    self.navigationButtonsHidden = NO;
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    
+    [super viewWillDisappear:animated];
+    
+    self.navigationButtonsHidden = YES;
 }
 
 
